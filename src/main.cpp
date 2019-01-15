@@ -286,11 +286,6 @@ String eepromRead() {
   return eepromcontent;
 }    
 
-
-  
-
-
-
 // initialization routines
 void setup ( void ) {
   setupSerial();
@@ -367,11 +362,11 @@ unsigned long startMillis = millis();
 
 void loop ( void ) {
 
+  ArduinoOTA.handle();
+
   tick++;
 
   handleFactoryReset();
-
-  ArduinoOTA.handle();
 
   if (!wifiConfigMode && wifiStationOK){
     unsigned long m = millis();
@@ -408,19 +403,14 @@ void loop ( void ) {
       }
     }
   } else { // blink yellow while not connected to wifi when it should
-    if (!wifiStationOK)
-    {
+    if (!wifiStationOK) {
       unsigned int i = tick % 500;
-      if (!i)
-      {
-        if (wifiStationConnected && (++connectedCount >= 50))
-        {
+      if (!i) {
+        if (wifiStationConnected && (++connectedCount >= 50)) {
           if (debug) Serial.println(F("Could not get IP - restarting!"));
           ESP.restart();
         }
-      }
-      else if  (i > 375)
-      {
+      } else if  (i > 375) {
         dotstarSetColor(ledstrip_upperring, 255, 200, 0);
         dotstarSetColor(ledstrip_lowerring, 255, 200, 0);
       }
