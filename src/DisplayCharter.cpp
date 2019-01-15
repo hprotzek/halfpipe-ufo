@@ -3,8 +3,6 @@
 #include <Adafruit_DotStar.h>
 #include "DisplayCharter.h"
 
-
-
 DisplayCharter::DisplayCharter(){
   Init();
 }
@@ -203,86 +201,3 @@ void DisplayCharter::Display(Adafruit_DotStar &dotstar){
 
 
 //------------------------------------------------------------------------------------------------------
-
-
-
-IPDisplay::IPDisplay(){
-  ipspeed = 1100;
-  displayCharter = 0;
-}
-
-
-void IPDisplay::ShowIp(String ip, DisplayCharter* displayCh){
-  displayCharter = displayCh;
-  ipAddress = ip;
-  pos = 0;
-  color = 0;
-  colorValue = 0xFF0000;
-  tick = ipspeed;
-  shortBreak = false;
-}
-void IPDisplay::ProcessTick()
-{
-  if (!displayCharter)
-    return;
-    
-  if (!--tick){
-    if (shortBreak){
-      displayCharter->Init();
-      displayCharter->SetLeds(0, 15, 0x303030);
-      tick = 100;
-      shortBreak = false;    
-      return;
-    }
-    shortBreak = true;
-    tick = ipspeed;
-
-    if (pos >= ipAddress.length()){
-      pos = 0;
-      if (++color >= 3)
-        color = 0;
-      switch (color){
-        case 0: 
-          colorValue = 0xFF0000;
-          break;
-        case 1: 
-          colorValue = 0x00FF00;
-          break;
-        case 2: 
-          colorValue = 0x0000FF;
-          break;
-          
-      }
-    }
-    displayCharter->Init();
-    char c = ipAddress.charAt(pos);
-    pos++;
-    
-    switch (c){
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-        displayCharter->SetLeds(0, c - '0', colorValue);
-        break; 
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        displayCharter->SetLeds(0, 5, colorValue);
-        displayCharter->SetLeds(8, c - '5', colorValue);
-        break; 
-      case '.':
-        displayCharter->SetLeds(0, 1, 0xb0b0b0);
-        displayCharter->SetLeds(5, 1, 0xb0b0b0);
-        displayCharter->SetLeds(10, 1, 0xb0b0b0);
-        break; 
-    }
-  }
-}
-void IPDisplay::StopShowingIp(){ 
-  if (displayCharter)
-    displayCharter->Init();
-  displayCharter = 0;
-}

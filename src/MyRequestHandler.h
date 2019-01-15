@@ -1,7 +1,6 @@
 #include <ESP8266WebServer.h>
 #include <FS.h>
 
-class IPDisplay;
 class DisplayCharter;
 class Adafruit_DotStar;
 class Config;
@@ -9,7 +8,7 @@ class Config;
 class MyFunctionRequestHandler : public RequestHandler {
 public:
 
-    MyFunctionRequestHandler(DisplayCharter* pDisplayLowerRing, DisplayCharter* pDisplayUpperRing, IPDisplay* pIpDisplay, Adafruit_DotStar* pLedstripLogo, Config* pConfig, bool debug);
+    MyFunctionRequestHandler(DisplayCharter* pDisplayLowerRing, DisplayCharter* pDisplayUpperRing, Adafruit_DotStar* pLedstripLogo, Config* pConfig, bool debug);
     
     bool canHandle(HTTPMethod requestMethod, String requestUri) override  { return true; }
     bool canUpload(String requestUri) override  { return true; }
@@ -31,7 +30,6 @@ private:
 private:
     DisplayCharter* mpDisplayLowerRing;
     DisplayCharter* mpDisplayUpperRing;
-    IPDisplay* mpIpDisplay;
     Adafruit_DotStar* mpLedstripLogo;
     Config* mpConfig;
     

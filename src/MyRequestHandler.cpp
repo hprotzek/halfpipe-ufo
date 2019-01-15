@@ -10,10 +10,9 @@
 
 extern void ledsSetLogoDefault();
 
-MyFunctionRequestHandler::MyFunctionRequestHandler(DisplayCharter* pDisplayLowerRing, DisplayCharter* pDisplayUpperRing, IPDisplay* pIpDisplay, Adafruit_DotStar* pLedstripLogo, Config* pConfig, bool debug){
+MyFunctionRequestHandler::MyFunctionRequestHandler(DisplayCharter* pDisplayLowerRing, DisplayCharter* pDisplayUpperRing, Adafruit_DotStar* pLedstripLogo, Config* pConfig, bool debug){
   mpDisplayLowerRing = pDisplayLowerRing;
   mpDisplayUpperRing = pDisplayUpperRing;
-  mpIpDisplay = pIpDisplay;
   mpLedstripLogo = pLedstripLogo;
   mpConfig = pConfig;
   mDebug = debug;
@@ -84,11 +83,6 @@ bool MyFunctionRequestHandler::handle(ESP8266WebServer& server, HTTPMethod reque
          server.send(302);
          return true;
       }
-    }
-    
-    if (requestUri.equals(F("/dynatrace"))){
-      dynatracePostHandler(server);
-      return true;
     }
   }
   
@@ -314,7 +308,6 @@ void MyFunctionRequestHandler::dtIntegrationHandler(ESP8266WebServer& server) {
 void eepromSet(String content);
 
 void MyFunctionRequestHandler::apiHandler(ESP8266WebServer& server) {
-  mpIpDisplay->StopShowingIp();
   //applicationProblems = -1;  //force repaint display in client mode
 
   // adjust logo brightness (on/off right now)
@@ -429,25 +422,4 @@ void MyFunctionRequestHandler::apiHandler(ESP8266WebServer& server) {
  
   server.sendHeader(F("cache-control"), F("private, max-age=0, no-cache, no-store"));
   server.send(200);
-}
-
-
-
-void MyFunctionRequestHandler::dynatracePostHandler(ESP8266WebServer& server) {
-  /*if (server.hasArg(F("plain"))) { // POST data is stored in the "plain" argument
-    StaticJsonBuffer<512> jsonBuffer;
-    if (mDebug) Serial.println(String(F("Dynatrace JSON POST data: ")) + server.arg(F("plain")));
-    JsonObject& jsonObject = jsonBuffer.parseObject(server.arg(F("plain")));
-
-    // TODO HANDLE Dynatrace PROBLEM DATA ################################################################################################
-
-  } else {
-    if (mDebug) Serial.println(String(F("Dynatrace JSON POST data MISSING!")));
-  }
-
-  server.sendHeader(F("cache-control"), F("private, max-age=0, no-cache, no-store"));
-  server.send(200);*/
-}
-
-
-  
+}  

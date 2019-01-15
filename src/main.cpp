@@ -27,7 +27,6 @@
 #include <StreamString.h>
 #include "DisplayCharter.h"
 #include "MyRequestHandler.h"
-#include "DataPolling.h"
 #include "Config.h"
 #include "defines.h"
 
@@ -40,10 +39,8 @@ Adafruit_DotStar ledstrip_upperring = Adafruit_DotStar(RING_LEDCOUNT, PIN_DOTSTA
 DisplayCharter displayCharter_lowerring;
 DisplayCharter displayCharter_upperring;
 
-IPDisplay ipDisplay;
 boolean debug = true;
 Config dTConfig(debug);
-DataPolling dataPolling(&displayCharter_lowerring, &displayCharter_upperring, &ipDisplay, &dTConfig, debug);
 
 boolean logo = true;
 
@@ -166,12 +163,16 @@ void handleFactoryReset() {
   }
 }
 
+void sendSlackMsg(String msg) {
+ 
+}
+
 void WiFiEvent(WiFiEvent_t event) {
     switch (event) {
       case WIFI_EVENT_STAMODE_GOT_IP:
         if (debug) Serial.println(String(F("WiFi connected. IP address: ")) + String(WiFi.localIP().toString()) + String(F(" hostname: ")) + WiFi.hostname() + String(F("  SSID: ")) + WiFi.SSID());
         wifiStationOK = true;
-        ipDisplay.ShowIp(WiFi.localIP().toString(), &displayCharter_lowerring);
+        sendSlackMsg(String(F("WiFi connected. IP address: ")) + String(WiFi.localIP().toString()) + String(F(" hostname: ")) + WiFi.hostname() + String(F("  SSID: ")) + WiFi.SSID());
         break;
       case WIFI_EVENT_STAMODE_DISCONNECTED:
         if (debug) Serial.println(F("WiFi client lost connection"));
@@ -207,7 +208,6 @@ void WiFiEvent(WiFiEvent_t event) {
         //Serial.println("WiFi accesspoint: probe request received.");
         break;
     }
-  
 }
 
 void printSpiffsContents() {
@@ -323,7 +323,7 @@ void setup ( void ) {
     //WiFi.printDiag(Serial);
   }
 
-  httpServer.addHandler(new MyFunctionRequestHandler(&displayCharter_lowerring, &displayCharter_upperring, &ipDisplay, &ledstrip_logo, &dTConfig, debug));
+  httpServer.addHandler(new MyFunctionRequestHandler(&displayCharter_lowerring, &displayCharter_upperring, &ledstrip_logo, &dTConfig, debug));
   httpServer.begin();
 
 }
@@ -341,13 +341,10 @@ void loop ( void ) {
     unsigned long m = millis();
     if (m - startMillis > dTConfig.pollingIntervalS * 1000){
       startMillis = m;
-      dataPolling.Poll();
-    }
-    ipDisplay.ProcessTick();   
+    }  
   }
   
   httpServer.handleClient();
-
  
   displayCharter_lowerring.Display(ledstrip_lowerring);
   displayCharter_upperring.Display(ledstrip_upperring);
