@@ -12,3 +12,5 @@
 
 #define EEPROM_MAXSIZE 64 // max number of bytes to store in eeprom (can be up to 4k; its using one sector after the spiffs) 
 
+#define SENSORNAME "halfpipe-ufo" 
+#define OTApassword "ee4ever" 
